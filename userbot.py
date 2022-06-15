@@ -25,6 +25,8 @@ async def get_members(chat_id) -> MemberInfo:
 
 
 def full_name(user: types.User) -> str:
+    if user.is_deleted:
+        return f"Deleted Account #{user.id}"
     result: str = user.first_name
     if user.last_name:
         result += " "
@@ -36,16 +38,21 @@ def print_members(where: str, members: MemberInfo) -> None:
     print(f"Total members in {where}: {len(members)}")
     humans: int = 0
     bots: int = 0
+    deleted: int = 0
     for member in members.values():
         if member.is_bot:
             marker = "*"
             bots += 1
+        elif member.is_deleted:
+            marker = "\u2020"
+            deleted += 1
         else:
             marker = "-"
             humans += 1
         print(f"{marker} {full_name(member)}")
     print(f"Humans: {humans}")
     print(f"Bots: {bots}")
+    print(f"Deleted: {deleted}")
 
 
 def intersection(a: dict, b: dict):
